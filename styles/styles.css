@@ -11,6 +11,12 @@
     100% { opacity: 1.0; }
 }
 
+.game-columns {
+    font-size: 300%;
+    margin: 100px;
+    display: flex;
+}
+
 .lunch-table {
     display: flex;
     margin: 1em;
@@ -19,8 +25,8 @@
 .table-top {
     height: 5em;
     width: 3em;
-    background: grey;
-    box-shadow: 0.1em 0.1em 0.1em #3a3a3a;
+    background: #cbcbcb;
+    box-shadow: 0em 0em 0.1em #3a3a3a;
     cursor: pointer;
 }
 
@@ -40,9 +46,25 @@
 .patron {
     height: 1em;
     width: 1em;
-    background: red;
+    text-align: center;
+}
+
+.patience {
+    font-size: 50%;
 }
 
 .patron:hover {
     opacity: 0.5;
+}
+
+.foods {
+    float: left;
+}
+
+.food {
+    width: 1em;
+    height: 1em;
+    background:grey;
+    border-radius: 1em;
+    margin-bottom: 0.5em;
 }

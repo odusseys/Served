@@ -1,6 +1,14 @@
 <div>
-    <div ng-repeat="table in tables">
-        <lunch-table data="table" select="tableClicks[$index]"> </lunch-table>
+    <div class="game-columns" ng-if="gameState != 'LOST'">
+        <div class="table-area">
+            <div ng-repeat="table in tables">
+                <lunch-table data="table" select="tableClicks[$index]"></lunch-table>
+            </div>
+        </div>
+        <div class="foods">
+            <div class="food" ng-repeat="food in foods track by $index"
+                 ng-style="{'background-color': foodColor(food)}"></div>
+        </div>
     </div>
-    <button ng-click="addPatronDebug()">add patron (debug)</button>
+    <div ng-if="gameState == 'LOST'"></div>
 </div>

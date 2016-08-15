@@ -45,17 +45,21 @@ app.factory('PatronColor', function () {
     }
 });
 
-app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory',
-    function ($scope, TableFactory, PatronFactory) {
+app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'PatronColor',
+    function ($scope, TableFactory, PatronFactory, PatronColor) {
 
         var nTables = 3;
         var tableCapacity = 6;
         var startingPatience = 5;
         var wantTypes = 2;
+        var nFoods = 5;
+        var startingPatrons = 3;
 
-        var tables = [];
-        $scope.tableClicks = [];
-        $scope.tables = tables;
+        var tables = null;
+        $scope.tableClicks = null;
+        $scope.tables = null;
+        $scope.foods = null;
+        var foods = null;
 
         var generateWant = function () {
             return Math.floor(Math.random() * wantTypes);
@@ -67,27 +71,48 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory',
             }));
             if (t.length > 0) {
                 var patron = PatronFactory(generateWant(), startingPatience);
-                console.debug(patron);
                 t[0].addPatron(patron);
-            }
-        };
-
-        $scope.selectTable = function (i) {
-            return function () {
-                console.debug(i);
-                //$scope.$apply();
             }
         };
 
         var tableClick = function (i) {
             return function () {
-                console.debug(i);
+                round(function () {
+                    var food = foods[0];
+                    console.debug(food);
+                    var newPatrons = [];
+                    tables[i].patrons.forEach(function (patron) {
+                        if (patron.wants != food) {
+                            newPatrons.push(patron);
+                            patron.patience++;
+                        }
+                    });
+                    tables[i].patrons = newPatrons;
+                });
             };
         };
 
-        $scope.addPatronDebug = function () {
+        var decrementPatiences = function () {
+            var patienceExceeded = false;
+            tables.forEach(function (table) {
+                table.patrons.forEach(function (patron) {
+                    patron.patience--;
+                    if (patron.patience == 0) {
+                        patienceExceeded = true;
+                    }
+                });
+            });
+            return patienceExceeded;
+        };
+
+        var round = function (action) {
+            action();
+            if (decrementPatiences()) {
+                $scope.gameState = 'LOST';
+            }
+            foods.shift();
+            pushFood();
             tryCreatePatron();
-            console.debug(tables);
         };
 
         $scope.addTable = function () {
@@ -95,13 +120,32 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory',
             $scope.tableClicks.push(tableClick(tables.size - 1));
         };
 
+        var pushFood = function () {
+            foods.push(generateWant());
+        };
+
+        $scope.foodColor = function (food) {
+            return PatronColor.of(food);
+        };
+
         $scope.initGame = function () {
+            $scope.gameState = 'PLAYING';
+            $scope.tables = [];
+            tables = $scope.tables;
+            $scope.foods = [];
+            foods = $scope.foods;
+            $scope.tableClicks = [];
             for (var i = 0; i < nTables; i++) {
                 (function (i) {
                     tables.push(TableFactory(tableCapacity));
                     $scope.tableClicks.push(tableClick(i));
                 })(i);
             }
+            for (var i = 0; i < nFoods; i++) {
+                pushFood();
+            }
+            console.debug($scope.foods);
+            console.debug(foods);
             tryCreatePatron();
         };
 
@@ -121,8 +165,8 @@ app.directive('lunchTable', function (PatronColor) {
         },
         link: function ($scope) {
 
-            $scope.patronColor = function(patron){
-                return PatronColor.of(patron.want);
+            $scope.patronColor = function (patron) {
+                return PatronColor.of(patron.wants);
             };
 
             var data = $scope.data;
@@ -139,7 +183,6 @@ app.directive('lunchTable', function (PatronColor) {
 
             //paint loop
             $scope.$watch('data', function () {
-                console.debug("new data");
                 assignSides();
             }, true);
         }
