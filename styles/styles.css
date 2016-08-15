@@ -1,0 +1,48 @@
+
+@-webkit-keyframes -webkit-pulse {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes pulse {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1.0; }
+}
+
+.lunch-table {
+    display: flex;
+    margin: 1em;
+}
+
+.table-top {
+    height: 5em;
+    width: 3em;
+    background: grey;
+    box-shadow: 0.1em 0.1em 0.1em #3a3a3a;
+    cursor: pointer;
+}
+
+.table-top:hover {
+    opacity: 0.8;
+}
+
+.table-side {
+    padding-left: 0.5em;
+    height: 5em;
+    width: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.patron {
+    height: 1em;
+    width: 1em;
+    background: red;
+}
+
+.patron:hover {
+    opacity: 0.5;
+}

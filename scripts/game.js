@@ -32,42 +32,117 @@ app.factory('PatronFactory', function () {
         var patron = {};
         patron.wants = wants;
         patron.patience = patience;
+        return patron;
     };
 });
 
-app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', function ($scope, TableFactory, PatronFactory) {
-
-    var nTables = 3;
-    var tableCapacity = 6;
-    var startingPatience = 5;
-    var wantTypes = 2;
-
-    var tables = [];
-    $scope.tables = tables;
-
-    var generateWant = function () {
-        return Math.floor(Math.random() * wantTypes);
-    };
-
-    var tryCreatePatron = function () {
-        var t = shuffled(tables.filter(function (t) {
-            return !t.isFull();
-        }));
-        console.debug(t);
-        if (t.length > 0) {
-            t[0].addPatron(PatronFactory(generateWant(), startingPatience));
+app.factory('PatronColor', function () {
+    var colors = ["red", "blue", "yellow", "#9400D3", "orange", "green", "pink"]; //todo: make this infinite ?
+    return {
+        of: function (want) {
+            return colors[want];
         }
-    };
+    }
+});
 
-    $scope.initGame = function () {
-        for (var i = 0; i < nTables; i++) {
-            tables.push(TableFactory(tableCapacity));
+app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory',
+    function ($scope, TableFactory, PatronFactory) {
+
+        var nTables = 3;
+        var tableCapacity = 6;
+        var startingPatience = 5;
+        var wantTypes = 2;
+
+        var tables = [];
+        $scope.tableClicks = [];
+        $scope.tables = tables;
+
+        var generateWant = function () {
+            return Math.floor(Math.random() * wantTypes);
+        };
+
+        var tryCreatePatron = function () {
+            var t = shuffled(tables.filter(function (t) {
+                return !t.isFull();
+            }));
+            if (t.length > 0) {
+                var patron = PatronFactory(generateWant(), startingPatience);
+                console.debug(patron);
+                t[0].addPatron(patron);
+            }
+        };
+
+        $scope.selectTable = function (i) {
+            return function () {
+                console.debug(i);
+                //$scope.$apply();
+            }
+        };
+
+        var tableClick = function (i) {
+            return function () {
+                console.debug(i);
+            };
+        };
+
+        $scope.addPatronDebug = function () {
+            tryCreatePatron();
+            console.debug(tables);
+        };
+
+        $scope.addTable = function () {
+            $scope.tables.push(TableFactory(tableCapacity));
+            $scope.tableClicks.push(tableClick(tables.size - 1));
+        };
+
+        $scope.initGame = function () {
+            for (var i = 0; i < nTables; i++) {
+                (function (i) {
+                    tables.push(TableFactory(tableCapacity));
+                    $scope.tableClicks.push(tableClick(i));
+                })(i);
+            }
+            tryCreatePatron();
+        };
+
+        $scope.initGame();
+
+
+    }
+]);
+
+app.directive('lunchTable', function (PatronColor) {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/lunch-table.html',
+        scope: {
+            data: "=",
+            select: "="
+        },
+        link: function ($scope) {
+
+            $scope.patronColor = function(patron){
+                return PatronColor.of(patron.want);
+            };
+
+            var data = $scope.data;
+
+            $scope.leftSide = [];
+            $scope.rightSide = [];
+
+            var assignSides = function () {
+                $scope.leftSide = data.patrons.slice(0, 3);
+                $scope.rightSide = data.patrons.slice(3, 6);
+            };
+
+            assignSides();
+
+            //paint loop
+            $scope.$watch('data', function () {
+                console.debug("new data");
+                assignSides();
+            }, true);
         }
-        tryCreatePatron();
-    };
 
-    $scope.initGame();
-
-
-}]);
-
+    }
+});

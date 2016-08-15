@@ -1,3 +1,9 @@
 <div class="lunch-table">
-
+    <div class="table-side">
+        <div ng-repeat="patron in leftSide" class="patron">{{patron.patience}}</div>
+    </div>
+    <div class="table-top" ng-click="select()"></div>
+    <div class="table-side">
+        <div ng-repeat="patron in rightSide" class="patron">{{patron.patience}}</div>
+    </div>
 </div>

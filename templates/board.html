@@ -1,8 +1,6 @@
 <div>
     <div ng-repeat="table in tables">
-        table {{$index}}
-        <div ng-repeat="patron in table.patrons">
-            patron {{patron.patience}}
-        </div>
+        <lunch-table data="table" select="tableClicks[$index]"> </lunch-table>
     </div>
+    <button ng-click="addPatronDebug()">add patron (debug)</button>
 </div>
