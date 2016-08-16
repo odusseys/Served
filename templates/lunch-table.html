@@ -1,13 +1,16 @@
 <div class="lunch-table">
     <div class="table-side">
         <div ng-repeat="patron in leftSide" class="patron"
-             ng-style="{'background-color': patronColor(patron)}">{{patron.patience}}
+             ng-style="{'background-color': patronColor(patron)}"
+             ng-class="{'blinking': patron.patience==1}">
+            <div class="patience" color-contrast="{{patronColor(patron)}}">{{patron.patience}}</div>
         </div>
     </div>
     <div class="table-top" ng-click="select()"></div>
     <div class="table-side">
         <div ng-repeat="patron in rightSide" class="patron"
-             ng-style="{'background-color': patronColor(patron)}">
+             ng-style="{'background-color': patronColor(patron)}"
+             ng-class="{'blinking': patron.patience==1}">
             <div class="patience" color-contrast="{{patronColor(patron)}}">{{patron.patience}}</div>
         </div>
     </div>

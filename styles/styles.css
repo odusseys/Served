@@ -11,8 +11,17 @@
     100% { opacity: 1.0; }
 }
 
+.blinking {
+    -webkit-animation-name: -webkit-pulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    animation-name: pulse;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
 .game-columns {
-    font-size: 300%;
+    font-size: 200%;
     margin: 100px;
     display: flex;
 }
@@ -51,20 +60,29 @@
 
 .patience {
     font-size: 50%;
+    height: 100%;
+    padding-top: 0.35em;
 }
 
 .patron:hover {
     opacity: 0.5;
 }
 
+.in-queue {
+    margin-right: 0.5em;
+    display: inline-block;
+}
+
 .foods {
     float: left;
+    text-align: center;
 }
 
 .food {
+    display: inline-block;
     width: 1em;
     height: 1em;
     background:grey;
     border-radius: 1em;
-    margin-bottom: 0.5em;
+    margin-right: 0.5em;
 }

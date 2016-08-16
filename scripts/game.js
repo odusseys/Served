@@ -45,8 +45,23 @@ app.factory('PatronColor', function () {
     }
 });
 
-app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'PatronColor',
-    function ($scope, TableFactory, PatronFactory, PatronColor) {
+app.factory('State', function(){
+   return function(){
+       var state = {};
+       state.level = 1;
+       state.score = 0;
+       return state;
+   }
+});
+
+app.filter('reverse', function() {
+    return function(items) {
+        return items.slice().reverse();
+    };
+});
+
+app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'PatronColor', 'State',
+    function ($scope, TableFactory, PatronFactory, PatronColor, State) {
 
         var nTables = 3;
         var tableCapacity = 6;
@@ -54,24 +69,30 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'Pa
         var wantTypes = 2;
         var nFoods = 5;
         var startingPatrons = 3;
+        var queueSize = 5;
 
         var tables = null;
         $scope.tableClicks = null;
         $scope.tables = null;
         $scope.foods = null;
+        var queue = null;
         var foods = null;
+        var state = null;
+
+        $scope.patronColor = function(patron){ return PatronColor.of(patron.wants); };
 
         var generateWant = function () {
             return Math.floor(Math.random() * wantTypes);
         };
 
-        var tryCreatePatron = function () {
+        var trySeatPatron = function () {
             var t = shuffled(tables.filter(function (t) {
                 return !t.isFull();
             }));
             if (t.length > 0) {
+                t[0].addPatron(queue.shift());
                 var patron = PatronFactory(generateWant(), startingPatience);
-                t[0].addPatron(patron);
+                queue.push(patron);
             }
         };
 
@@ -112,7 +133,7 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'Pa
             }
             foods.shift();
             pushFood();
-            tryCreatePatron();
+            trySeatPatron();
         };
 
         $scope.addTable = function () {
@@ -128,13 +149,20 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'Pa
             return PatronColor.of(food);
         };
 
-        $scope.initGame = function () {
-            $scope.gameState = 'PLAYING';
+        var initStorages = function(){
             $scope.tables = [];
             tables = $scope.tables;
             $scope.foods = [];
             foods = $scope.foods;
             $scope.tableClicks = [];
+            state = State();
+            $scope.state = State();
+            queue = [];
+            $scope.queue = queue;
+        };
+
+        $scope.initGame = function () {
+            initStorages();
             for (var i = 0; i < nTables; i++) {
                 (function (i) {
                     tables.push(TableFactory(tableCapacity));
@@ -144,13 +172,18 @@ app.controller('GameController', ['$scope', 'TableFactory', 'PatronFactory', 'Pa
             for (var i = 0; i < nFoods; i++) {
                 pushFood();
             }
-            console.debug($scope.foods);
-            console.debug(foods);
-            tryCreatePatron();
+            for(var i = 0; i < queueSize; i++){
+                queue.push(PatronFactory(generateWant(), startingPatience));
+            }
+            for(var i = 0; i < startingPatrons; i++){
+                trySeatPatron();
+            }
+            $scope.gameState = 'PLAYING';
         };
 
         $scope.initGame();
 
+        console.debug(queue);
 
     }
 ]);

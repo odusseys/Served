@@ -1,5 +1,11 @@
 <div>
     <div class="game-columns" ng-if="gameState != 'LOST'">
+        <div class="queue">
+            <div ng-repeat="patron in queue | reverse" class="patron in-queue"
+                 ng-style="{'background-color': patronColor(patron), 'font-size': $index==(queue.length - 1)?'150%': '100%'}"
+            ng-class="{'blinking': $index==(queue.length - 1)}">
+            </div>
+        </div>
         <div class="table-area">
             <div ng-repeat="table in tables">
                 <lunch-table data="table" select="tableClicks[$index]"></lunch-table>
@@ -7,8 +13,9 @@
         </div>
         <div class="foods">
             <div class="food" ng-repeat="food in foods track by $index"
-                 ng-style="{'background-color': foodColor(food)}"></div>
+                 ng-style="{'background-color': foodColor(food), 'font-size': $index==0?'150%':'100%'}"
+                ng-class="{'blinking': $index==0}"></div>
         </div>
     </div>
-    <div ng-if="gameState == 'LOST'"></div>
+    <div ng-if="gameState == 'LOST'"> YOU LOSE </div>
 </div>

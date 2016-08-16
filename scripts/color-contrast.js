@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('colorContrast', [])
     .directive('colorContrast', function () {
 
@@ -26,9 +24,7 @@ angular.module('colorContrast', [])
         return {
             restrict: 'A',
             link: function postLink(scope, element, attrs) {
-                console.debug("in contrast");
                 attrs.$observe('colorContrast', function (color) {
-                    console.debug("in contrast");
                     if (color) {
                         color = stripNumberSign(color);
                         element.css("background-color", "#" + color);
